@@ -1,5 +1,26 @@
 # encoding: UTF-8
 
+# Copyright (c) 2011 Patrick Hogan
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+# LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+# WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 require "sterile/codepoints"
 require "sterile/html_entities"
 require "sterile/smart_format_rules"
@@ -26,7 +47,16 @@ module Sterile
       result
     end
 
-
+    # Transliterate Unicode [and accented ASCII] characters to their plain-text
+    # ASCII equivalents. This is based on data from the stringex gem (https://github.com/rsl/stringex)
+    # which is in turn a port of Perl's Unidecode and ostensibly provides
+    # superior results to iconv. The optical conversion data is based on work
+    # by Eric Boehs at https://github.com/ericboehs/to_slug
+    # Passing an option of :optical => true will prefer optical mapping instead
+    # of more pedantic matches.
+    #
+    #   "ýůçký".transliterate # => "yucky"
+    #
     def transliterate(string, options = {})
       options = {
         :optical => false
@@ -42,18 +72,34 @@ module Sterile
         end
       end
     end
+    alias_method :to_ascii, :transliterate
 
 
+    # Trim whitespace from start and end of string and remove any redundant
+    # whitespace in between.
+    #
+    #   " Hello  world! ".transliterate # => "Hello world!"
+    #
     def trim_whitespace(string)
       string.gsub(/\s+/, " ").strip
     end
 
 
+    # Transliterate to ASCII and strip out any HTML/XML tags.
+    #
+    #   "<b>nåsty</b>".sterilize # => "nasty"
+    #
     def sterilize(string)
       strip_tags(transliterate(string))
     end
 
 
+    # Transliterate to ASCII, downcase and format for URL permalink/slug
+    # by stripping out all non-alphanumeric characters and replacing spaces
+    # with a delimiter (defaults to '-').
+    #
+    #   "Hello World!".sluggerize # => "hello-world"
+    #
     def sluggerize(string, options = {})
       options = {
         :delimiter => "-"
@@ -61,8 +107,13 @@ module Sterile
 
       sterilize(string).strip.gsub(/\s+/, "-").gsub(/[^a-zA-Z0-9\-]/, "").gsub(/-+/, options[:delimiter]).downcase
     end
+    alias_method :to_slug, :sluggerize
 
 
+    # Format text with proper "curly" quotes, m-dashes, copyright, trademark, etc.
+    #
+    #   q{"He said, 'Away with you, Drake!'"}.smart_format # => “He said, ‘Away with you, Drake!’”
+    #
     def smart_format(string)
       SMART_FORMAT_RULES.each do |rule|
         string.gsub!(rule[0], rule[1])
@@ -71,6 +122,11 @@ module Sterile
     end
 
 
+    # Turn Unicode characters into their HTML equivilents.
+    # If a valid HTML entity is not possible, it will create a numeric entity.
+    #
+    #   q{“Economy Hits Bottom,” ran the headline}.smart_format # => &ldquo;Economy Hits Bottom,&rdquo; ran the headline
+    #
     def encode_entities(string)
       transmogrify(string) do |mapping, codepoint|
         if (32..126).include?(codepoint)
@@ -82,6 +138,9 @@ module Sterile
     end
 
 
+    # The reverse of +encode_entities+. Turns HTML or numeric entities into
+    # their Unicode counterparts.
+    #
     def decode_entities(string)
       string.gsub!(/&#(\d{1,4});/) { [$1.to_i].pack("U") }
       string.gsub(/&([a-zA-Z0-9]+);/) do
@@ -91,6 +150,10 @@ module Sterile
     end
 
 
+    # Remove HTML/XML tags from text. Also strips out comments, PHP and ERB style tags.
+    # CDATA is considered text unless :keep_cdata => false is specified.
+    # Redundant whitespace will be removed unless :keep_whitespace => true is specified.
+    #
     def strip_tags(string, options = {})
       options = {
         :keep_whitespace => false,
@@ -130,6 +193,11 @@ module Sterile
     end
 
 
+    # Similar to +gsub+, except it works in between HTML/XML tags and 
+    # yields text to a block. Text will be replaced by what the block
+    # returns.
+    # Warning: does not work in some degenerate cases.
+    #
     def gsub_tags(string, &block)
       raise "No block given" unless block_given?
 
@@ -139,6 +207,10 @@ module Sterile
     end
 
 
+    # Iterates over all text in between HTML/XML tags and yields
+    # it to a block.
+    # Warning: does not work in some degenerate cases.
+    #
     def scan_tags(string, &block)
       raise "No block given" unless block_given?
 
@@ -148,6 +220,8 @@ module Sterile
     end
 
 
+    # Like +smart_format+, but works with HTML/XML (somewhat).
+    #
     def smart_format_tags(string)
       string.gsub_tags do |text|
         text.smart_format.encode_entities
@@ -155,6 +229,10 @@ module Sterile
     end
 
 
+    # Format text appropriately for titles. This method is much smarter
+    # than ActiveSupport's +titlecase+. The algorithm is based on work done
+    # by John Gruber et al (http://daringfireball.net/2008/08/title_case_update)
+    #
     def titlecase(string)
       string.strip!
       string.gsub!(/\s+/, " ")
@@ -245,11 +323,13 @@ module Sterile
       string
     end
 
-  end # class << self
+  end
 
 end
 
 
+# Add extensions to String
+#
 class String
   Sterile.methods(false).each do |method|
     eval("def #{method}(*args, &block); Sterile.#{method}(self, *args, &block); end")
