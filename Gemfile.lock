@@ -1,26 +1,14 @@
 PATH
   remote: .
   specs:
-    sterilize (0.1.0)
+    sterile (1.0.0)
 
 GEM
   remote: http://rubygems.org/
   specs:
-    ZenTest (4.5.0)
-    autotest (4.4.6)
-      ZenTest (>= 4.4.1)
-    awesome_print (0.4.0)
-    mynyml-redgreen (0.7.1)
-      term-ansicolor (>= 1.0.4)
-    rake (0.9.1)
-    term-ansicolor (1.0.5)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  autotest
-  awesome_print
-  mynyml-redgreen
-  rake
-  sterilize!
+  sterile!

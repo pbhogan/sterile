@@ -1,6 +1,6 @@
 # encoding: UTF-8
 
-module Sterilize
+module Sterile
   SMART_FORMAT_RULES = [
     ["'tain't", "’tain’t"],
     ["'twere", "’twere"],

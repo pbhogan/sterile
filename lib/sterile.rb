@@ -1,11 +1,11 @@
 # encoding: UTF-8
 
-require "sterilize/codepoints"
-require "sterilize/html_entities"
-require "sterilize/smart_format_rules"
+require "sterile/codepoints"
+require "sterile/html_entities"
+require "sterile/smart_format_rules"
 
 
-module Sterilize
+module Sterile
 
   class << self
 
@@ -59,7 +59,7 @@ module Sterilize
         :delimiter => "-"
       }.merge!(options)
 
-      sterilize(string).strip.gsub(/\s+/, "-").gsub(/[^a-zA-Z0-9\-]/, "").gsub(/-+/, options[:delimiter]).downcase
+      sterile(string).strip.gsub(/\s+/, "-").gsub(/[^a-zA-Z0-9\-]/, "").gsub(/-+/, options[:delimiter]).downcase
     end
 
 
@@ -251,9 +251,9 @@ end
 
 
 class String
-  Sterilize.methods(false).each do |method|
-    eval("def #{method}(*args, &block); Sterilize.#{method}(self, *args, &block); end")
-    eval("def #{method}!(*args, &block); replace Sterilize.#{method}(self, *args, &block); end")
+  Sterile.methods(false).each do |method|
+    eval("def #{method}(*args, &block); Sterile.#{method}(self, *args, &block); end")
+    eval("def #{method}!(*args, &block); replace Sterile.#{method}(self, *args, &block); end")
   end
 end
 
