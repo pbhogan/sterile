@@ -1,0 +1,8 @@
+pkg/*
+doc/*
+*.gem
+.bundle
+.DS_Store
+make
+test
+vendor
