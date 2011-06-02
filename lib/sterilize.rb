@@ -2,28 +2,28 @@
 
 require "sterilize/codepoints"
 require "sterilize/html_entities"
+require "sterilize/smart_format_rules"
 
 
 module Sterilize
 
   class << self
 
-    def convert(string, &strategy)
-      raise "Must provide block for strategy parameter" unless block_given?
+    def transmogrify(string, &block)
+      raise "No block given" unless block_given?
 
-      new_string = ""
+      result = ""
       string.unpack("U*").each do |codepoint|
         cg = codepoint >> 8
         cp = codepoint & 0xFF
         begin
           mapping = CODEPOINTS[cg][cp]
-          new_string << yield(mapping, codepoint)
+          result << yield(mapping, codepoint)
         rescue
-          new_string << ""
         end
       end
 
-      new_string
+      result
     end
 
 
@@ -33,19 +33,46 @@ module Sterilize
       }.merge!(options)
 
       if options[:optical]
-        convert(string) do |mapping, codepoint|
+        transmogrify(string) do |mapping, codepoint|
           mapping[1] || mapping[0] || ""
         end
       else
-        convert(string) do |mapping, codepoint|
+        transmogrify(string) do |mapping, codepoint|
           mapping[0] || mapping[1] || ""
         end
       end
     end
 
 
+    def trim_whitespace(string)
+      string.gsub(/\s+/, " ").strip
+    end
+
+
+    def sterilize(string)
+      strip_tags(transliterate(string))
+    end
+
+
+    def sluggerize(string, options = {})
+      options = {
+        :delimiter => "-"
+      }.merge!(options)
+
+      sterilize(string).strip.gsub(/\s+/, "-").gsub(/[^a-zA-Z0-9\-]/, "").gsub(/-+/, options[:delimiter]).downcase
+    end
+
+
+    def smart_format(string)
+      SMART_FORMAT_RULES.each do |rule|
+        string.gsub!(rule[0], rule[1])
+      end
+      string
+    end
+
+
     def encode_entities(string)
-      convert(string) do |mapping, codepoint|
+      transmogrify(string) do |mapping, codepoint|
         if (32..126).include?(codepoint)
           mapping[0]
         else
@@ -61,11 +88,6 @@ module Sterilize
         codepoint = HTML_ENTITIES[$1]
         codepoint ? [codepoint].pack("U") : $&
       end
-    end
-
-
-    def trim_whitespace(string)
-      string.gsub(/\s+/, " ").strip
     end
 
 
@@ -108,68 +130,7 @@ module Sterilize
     end
 
 
-    def sterilize(string)
-      strip_tags(transliterate(string))
-    end
-
-
-    def sluggerize(string, options = {})
-      options = {
-        :delimiter => "-"
-      }.merge!(options)
-
-      sterilize(string).strip.gsub(/\s+/, "-").gsub(/[^a-zA-Z0-9\-]/, "").gsub(/-+/, options[:delimiter]).downcase
-    end
-
-
-    def smart_format(string)
-      {
-        "'tain't" => "’tain’t",
-        "'twere" => "’twere",
-        "'twas" => "’twas",
-        "'tis" => "’tis",
-        "'twill" => "’twill",
-        "'til" => "’til",
-        "'bout" => "’bout",
-        "'nuff" => "’nuff",
-        "'round" => "’round",
-        "'cause" => "’cause",
-        "'cos" => "’cos",
-        "i'm" => "i’m",
-        '--"' => "—”",
-        "--'" => "—’",
-        "--" => "—",
-        "..." => "…",
-        "(tm)" => "™",
-        "(TM)" => "™",
-        "(c)" => "©",
-        "(r)" => "®",
-        "(R)" => "®",
-        /s\'([^a-zA-Z0-9])/ => "s’\\1",
-        /"([:;])/ => "”\\1",
-        /\'s$/ => "’s",
-        /\'(\d\d(?:’|\')?s)/ => "’\\1",
-        /(\s|\A|"|\(|\[)\'/ => "\\1‘",
-        /(\d+)"/ => "\\1′",
-        /(\d+)\'/ => "\\1″",
-        /(\S)\'([^\'\s])/ => "\\1’\\2",
-        /(\s|\A|\(|\[)"(?!\s)/ => "\\1“\\2",
-        /"(\s|\S|\Z)/ => "”\\1",
-        /\'([\s.]|\Z)/ => "’\\1",
-        /(\d+)x(\d+)/ => "\\1×\\2",
-        /([a-z])'(t|d|s|ll|re|ve)(\b)/i => "\\1’\\2\\3"
-      }.each { |rule, replacement| string.gsub!(rule, replacement) }
-
-      string
-    end
-
-
-    def smart_format_html(string)
-      string.gsub_text { |text| text.smart_format.encode_entities }
-    end
-
-
-    def gsub_text(string, &block)
+    def gsub_tags(string, &block)
       raise "No block given" unless block_given?
 
       string.gsub!(/(<[^>]*>)|([^<]+)/) do |match|
@@ -178,11 +139,18 @@ module Sterilize
     end
 
 
-    def scan_text(string, &block)
+    def scan_tags(string, &block)
       raise "No block given" unless block_given?
 
       string.scan(/(<[^>]*>)|([^<]+)/) do |match|
         yield($2) unless $2.nil?
+      end
+    end
+
+
+    def smart_format_tags(string)
+      string.gsub_tags do |text|
+        text.smart_format.encode_entities
       end
     end
 
@@ -192,8 +160,8 @@ module Sterilize
       string.gsub!(/\s+/, " ")
       string.downcase! unless string =~ /[[:lower:]]/
 
-      small_words = %w{ (?<!q&)a an and as at(?!&t) but by en for if in nor of on or the to v[.]? via vs[.]? }.join("|")
-      apos = / (?: ['’] [[:lower:]]* )? /x
+      small_words = %w{ a an and as at(?!&t) but by en for if in nor of on or the to v[.]? via vs[.]? }.join("|")
+      apos = / (?: ['’] [[:lower:]]* )? /xu
 
       string.gsub!(
         /
@@ -210,14 +178,25 @@ module Sterilize
           )
           ([_\*]*)
           \b
-        /x
+        /xu
       ) do
-        # $1 + (
-        #   $2 ? $2               # preserve URL, domain, or email
-        #   : $3 ? $3.downcase    # lowercase small word
-        #   : $4 ? $4.downcase.capitalize # capitalize word w/o internal caps
-        #   : $5                  # preserve other kinds of word
-        # ) + $6
+        ($1 ? $1 : "") +
+        ($2 ? $2 : ($3 ? $3.downcase : ($4 ? $4.downcase.capitalize : $5))) +
+        ($6 ? $6 : "")
+      end
+
+      if RUBY_VERSION < "1.9.0"
+        string.gsub!(
+          /
+            \b
+            ([:alpha:]+)
+            (‑)
+            ([:alpha:]+)
+            \b
+          /xu
+        ) do
+          $1.downcase.capitalize + $2 + $1.downcase.capitalize
+        end
       end
 
       string.gsub!(
@@ -229,7 +208,7 @@ module Sterilize
           )
           ( #{small_words} )    # followed by a small-word
           \b
-        /xi
+        /xiu
       ) do
         $1 + $2.downcase.capitalize
       end
@@ -243,7 +222,7 @@ module Sterilize
             |
             ['"’”)\]] [ ]       # or of an inserted subphrase
           )
-        /x
+        /xu
       ) do
         $1.downcase.capitalize
       end
@@ -253,13 +232,15 @@ module Sterilize
           (
             \b
             [[:alpha:]]         # single first letter
-            \-                  # followed by a dash
+            [\-‑]               # followed by a dash
           )
           ( [[:alpha:]] )       # followed by a letter
-        /x
+        /xu
       ) do
         $1 + $2.downcase
       end
+
+      string.gsub!(/q&a/i, 'Q&A')
 
       string
     end
@@ -267,18 +248,6 @@ module Sterilize
   end # class << self
 
 end
-
-
-# module StringExtensions
-#   def self.included(base)
-#     Sterilize.methods(false).each do |method|
-#       base.send(:define_method, method) do |*args|
-#         Sterilize.send(method, self, *args)
-#       end
-#     end
-#   end
-# end
-# String.send :include, Sterilize::StringExtensions
 
 
 class String
