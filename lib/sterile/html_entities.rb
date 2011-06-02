@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 module Sterile
+  # @private
   HTML_ENTITIES = {
     "quot" => 34,
     "amp" => 38,

@@ -1,6 +1,7 @@
+*.gem
 pkg/*
 doc/*
-*.gem
+.yardoc
 .bundle
 .DS_Store
 make

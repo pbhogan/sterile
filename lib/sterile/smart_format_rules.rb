@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 module Sterile
+  # @private
   SMART_FORMAT_RULES = [
     ["'tain't", "’tain’t"],
     ["'twere", "’twere"],

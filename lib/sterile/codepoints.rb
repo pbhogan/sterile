@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 module Sterile
+  # @private
   CODEPOINTS = [
     [
       nil,
