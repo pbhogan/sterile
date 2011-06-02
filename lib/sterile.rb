@@ -59,7 +59,7 @@ module Sterile
         :delimiter => "-"
       }.merge!(options)
 
-      sterile(string).strip.gsub(/\s+/, "-").gsub(/[^a-zA-Z0-9\-]/, "").gsub(/-+/, options[:delimiter]).downcase
+      sterilize(string).strip.gsub(/\s+/, "-").gsub(/[^a-zA-Z0-9\-]/, "").gsub(/-+/, options[:delimiter]).downcase
     end
 
 
