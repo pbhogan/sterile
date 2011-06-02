@@ -125,7 +125,7 @@ module Sterile
     # Turn Unicode characters into their HTML equivilents.
     # If a valid HTML entity is not possible, it will create a numeric entity.
     #
-    #   q{“Economy Hits Bottom,” ran the headline}.smart_format # => &ldquo;Economy Hits Bottom,&rdquo; ran the headline
+    #   q{“Economy Hits Bottom,” ran the headline}.encode_entities # => &ldquo;Economy Hits Bottom,&rdquo; ran the headline
     #
     def encode_entities(string)
       transmogrify(string) do |mapping, codepoint|
