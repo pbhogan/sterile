@@ -1,6 +1,6 @@
 # encoding: UTF-8
 
-module Sterile1
+module Sterile
 
   class << self
 
@@ -9,12 +9,19 @@ module Sterile1
     # by John Gruber et al (http://daringfireball.net/2008/08/title_case_update)
     #
     def titlecase(string)
+
+      lsquo = [8216].pack("U")
+      rsquo = [8217].pack("U")
+      ldquo = [8220].pack("U")
+      rdquo = [8221].pack("U")
+      ndash = [8211].pack("U")
+
       string.strip!
       string.gsub!(/\s+/, " ")
       string.downcase! unless string =~ /[[:lower:]]/
 
       small_words = %w{ a an and as at(?!&t) but by en for if in nor of on or the to v[.]? via vs[.]? }.join("|")
-      apos = / (?: ['’] [[:lower:]]* )? /xu
+      apos = / (?: ['#{rsquo}] [[:lower:]]* )? /xu
 
       string.gsub!(
         /
@@ -25,9 +32,9 @@ module Sterile1
             |
             ( (?i: #{small_words} ) #{apos} )               # or small word, case-insensitive
             |
-            ( [[:alpha:]] [[:lower:]'’()\[\]{}]* #{apos} )  # or word without internal caps
+            ( [[:alpha:]] [[:lower:]'#{rsquo}()\[\]{}]* #{apos} )  # or word without internal caps
             |
-            ( [[:alpha:]] [[:alpha:]'’()\[\]{}]* #{apos} )  # or some other word
+            ( [[:alpha:]] [[:alpha:]'#{rsquo}()\[\]{}]* #{apos} )  # or some other word
           )
           ([_\*]*)
           \b
@@ -43,7 +50,7 @@ module Sterile1
           /
             \b
             ([:alpha:]+)
-            (‑)
+            (#{ndash})
             ([:alpha:]+)
             \b
           /xu
@@ -57,7 +64,7 @@ module Sterile1
           (
             \A [[:punct:]]*     # start of title
             | [:.;?!][ ]+       # or of subsentence
-            | [ ]['"“‘(\[][ ]*  # or of inserted subphrase
+            | [ ]['"#{ldquo}#{lsquo}(\[][ ]*  # or of inserted subphrase
           )
           ( #{small_words} )    # followed by a small-word
           \b
@@ -73,7 +80,7 @@ module Sterile1
           (?=
             [[:punct:]]* \Z     # at the end of the title
             |
-            ['"’”)\]] [ ]       # or of an inserted subphrase
+            ['"#{rsquo}#{rdquo})\]] [ ]       # or of an inserted subphrase
           )
         /xu
       ) do
@@ -85,7 +92,7 @@ module Sterile1
           (
             \b
             [[:alpha:]]         # single first letter
-            [\-‑]               # followed by a dash
+            [\-#{ndash}]               # followed by a dash
           )
           ( [[:alpha:]] )       # followed by a letter
         /xu
@@ -97,7 +104,7 @@ module Sterile1
 
       string
     end
-    alias_method :titlize, :titlecase
+    alias_method :titleize, :titlecase
 
 
     private
