@@ -59,7 +59,7 @@ Remove HTML/XML tags from text. Also strips out comments, PHP and ERB style tags
 Miscellaneous
 -------------
 
-Transliterate to ASCII, downcase and format for URL permalink/slug by stripping out all non-alphanumeric characters and replacing spaces with a delimiter (defaults to '-').
+Transliterate to ASCII, downcase and format for URL permalink/slug by stripping out all non-alphanumeric characters and replacing spaces with a delimiter (defaults to '-', configured by :delimiter option).
 
     "Hello World!".sluggerize # => "hello-world"
 
@@ -78,6 +78,11 @@ Similar to gsub, except it works in between HTML/XML tags and yields text to a b
 Iterates over all text in between HTML/XML tags and yield to a block.
 
     "Only <i>output</i> the <b>text</b> in this".scan_tags { |t| puts t }
+
+Warning / To Do
+---------------
+
+All the *_tags functions are based on a regular expressions. Yes, I know this is [wrong](http://stackoverflow.com/questions/1732348/regex-match-open-tags-except-xhtml-self-contained-tags/1732454#1732454) and I plan to using a proper parser for it in the future.
 
 Installation
 ------------
