@@ -71,11 +71,11 @@ Trim whitespace from start and end of string and remove any redundant whitespace
 
     " Hello  world! ".transliterate # => "Hello world!"
 
-Similar to gsub, except it works in between HTML/XML tags and yields text to a block. Text will be replaced by what the block returns.
+Iterate over all text in between HTML/XML tags and yield text to a block, replace by what the block returns.
 
     "Only <i>uppercase</i> the <b>text</b> in this".gsub_tags { |t| t.upcase }
 
-Iterates over all text in between HTML/XML tags and yield to a block.
+Iterate over all text in between HTML/XML tags and yield to a block.
 
     "Only <i>output</i> the <b>text</b> in this".scan_tags { |t| puts t }
 
