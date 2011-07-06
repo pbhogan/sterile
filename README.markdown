@@ -43,11 +43,22 @@ Entities
 
 Turn Unicode characters into their HTML equivilents. If a valid HTML entity is not possible, it will create a numeric entity.
 
-    q{“Economy Hits Bottom,” ran the headline}.encode_entities # => &ldquo;Economy Hits Bottom,&rdquo; ran the headline
+    q{“Economy Hits Bottom,” ran the headline}.encode_entities # => "&ldquo;Economy Hits Bottom,&rdquo; ran the headline"
 
 Turn HTML entities into unicode characters:
 
     "&ldquo;Economy Hits Bottom,&rdquo; ran the headline".decode_entities # => "“Economy Hits Bottom,” ran the headline"
+
+Titlecase
+---------
+
+Format text appropriately for titles. This method is much smarter than ActiveSupport's titlecase. The algorithm is based on work done by John Gruber et al (http://daringfireball.net/2008/08/title_case_update). It gets closer to the AP standard for title capitalization, including proper support for small words and handles a variety of edge cases.
+
+	"Q&A with Steve Jobs: 'That's what happens in technology'".titlecase
+	# => "Q&A With Steve Jobs: 'That's What Happens in Technology'"
+	
+	"Small word at end is nothing to be afraid of".titleize # alias for titlecase
+	# => "Small Word at End Is Nothing to Be Afraid Of"
 
 Strip Tags
 ----------
@@ -62,6 +73,7 @@ Miscellaneous
 Transliterate to ASCII, downcase and format for URL permalink/slug by stripping out all non-alphanumeric characters and replacing spaces with a delimiter (defaults to '-', configured by :delimiter option).
 
     "Hello World!".sluggerize # => "hello-world"
+		"Hello World!".to_slug # => "hello-world"
 
 Transliterate to ASCII and strip out any HTML/XML tags.
 
