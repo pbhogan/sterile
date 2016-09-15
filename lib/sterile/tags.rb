@@ -55,7 +55,7 @@ module Sterile
     def gsub_tags(string, &block)
       raise "No block given" unless block_given?
 
-      string.gsub!(/(<[^>]*>)|([^<]+)/) do |match|
+      string.gsub(/(<[^>]*>)|([^<]+)/) do |match|
         $2 ? yield($2) : $1
       end
     end
@@ -76,3 +76,4 @@ module Sterile
   end # class << self
 
 end # module Sterile
+

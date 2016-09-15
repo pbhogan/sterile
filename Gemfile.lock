@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sterile (1.0.3)
+    sterile (1.0.4)
 
 GEM
   remote: http://rubygems.org/
@@ -25,3 +25,6 @@ DEPENDENCIES
   purdytest
   rake (= 0.8.7)
   sterile!
+
+BUNDLED WITH
+   1.13.1
