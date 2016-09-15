@@ -20,8 +20,8 @@ module Sterile
     #
     def smart_format_tags(string)
       string.gsub_tags do |text|
-        text.smart_format.encode_entities
-      end
+        text.smart_format
+      end.encode_entities
     end
 
 
@@ -39,3 +39,4 @@ module Sterile
   end # class << self
 
 end # module Sterile
+

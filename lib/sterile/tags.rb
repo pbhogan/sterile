@@ -55,9 +55,11 @@ module Sterile
     def gsub_tags(string, &block)
       raise "No block given" unless block_given?
 
-      string.gsub(/(<[^>]*>)|([^<]+)/) do |match|
-        $2 ? yield($2) : $1
+      fragment = Nokogiri::HTML::DocumentFragment.parse string
+      fragment.traverse do |node|
+        node.content = yield(node.content) if node.text?
       end
+      fragment.to_html
     end
 
 
@@ -68,9 +70,11 @@ module Sterile
     def scan_tags(string, &block)
       raise "No block given" unless block_given?
 
-      string.scan(/(<[^>]*>)|([^<]+)/) do |match|
-        yield($2) unless $2.nil?
+      fragment = Nokogiri::HTML::DocumentFragment.parse string
+      fragment.traverse do |node|
+        yield(node.content) if node.text?
       end
+      nil
     end
 
   end # class << self
