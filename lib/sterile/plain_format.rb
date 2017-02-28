@@ -17,8 +17,8 @@ module Sterile
     #
     def plain_format_tags(string)
       string.gsub_tags do |text|
-        text.plain_format
-      end
+        text.plain_format.decode_entities
+      end.encode_entities
     end
 
 
