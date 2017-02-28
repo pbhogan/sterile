@@ -10,7 +10,7 @@ module Sterile
     #
     def smart_format(string)
       smart_format_rules.each do |rule|
-        string.gsub!(rule[0], rule[1])
+        string.gsub! rule[0], rule[1]
       end
       string
     end

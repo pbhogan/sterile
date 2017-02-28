@@ -1,11 +1,15 @@
 PATH
   remote: .
   specs:
-    sterile (1.0.4)
+    sterile (1.0.6)
+      nokogiri
 
 GEM
   remote: http://rubygems.org/
   specs:
+    mini_portile2 (2.1.0)
+    nokogiri (1.7.0.1)
+      mini_portile2 (~> 2.1.0)
 
 PLATFORMS
   ruby

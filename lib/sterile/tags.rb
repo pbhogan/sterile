@@ -1,4 +1,6 @@
 # encoding: UTF-8
+require "nokogiri"
+
 
 module Sterile
 
