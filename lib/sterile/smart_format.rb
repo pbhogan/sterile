@@ -21,7 +21,7 @@ module Sterile
     def smart_format_tags(string)
       string.gsub_tags do |text|
         text.smart_format
-      end.encode_entities.gsub(/(\S)&ldquo;/, "\\1&rdquo;").gsub(/(\S)&lsquo;/, "\\1&rsquo;")
+      end.encode_entities.gsub(/(\<\/\w+\>)&ldquo;/, "\\1&rdquo;").gsub(/(\<\/\w+\>)&lsquo;/, "\\1&rsquo;")
     end
 
 
