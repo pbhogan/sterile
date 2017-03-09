@@ -38,7 +38,7 @@ module Sterile
           nil,
           nil,
           nil,
-          [" "], #  
+          [" "], #
           ["!"], # !
           ["\"", nil, "quot"], # "
           ["#"], # #
@@ -97,7 +97,7 @@ module Sterile
           ["X"], # X
           ["Y"], # Y
           ["Z"], # Z
-          ["]"], # [
+          ["["], # [
           ["\\"], # \
           ["]"], # ]
           ["^"], # ^
@@ -6760,8 +6760,8 @@ module Sterile
           [".."], # ‥
           ["...", nil, "hellip"], # …
           ["."], # ‧
-          nil, #  
-          nil, #  
+          nil, # 
+          nil, # 
           nil, # ‪
           nil, # ‫
           nil, # ‬
