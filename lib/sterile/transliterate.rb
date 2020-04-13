@@ -12,7 +12,7 @@ module Sterile
         cg = codepoint >> 8
         cp = codepoint & 0xFF
         begin
-          mapping = codepoints_data[cg][cp]
+          mapping = Array(codepoints_data[cg][cp])
           result << yield(mapping, codepoint)
         rescue
         end
@@ -63,3 +63,4 @@ module Sterile
   end # class << self
 
 end # module Sterile
+
