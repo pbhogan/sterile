@@ -2,13 +2,13 @@ PATH
   remote: .
   specs:
     sterile (1.0.14)
-      nokogiri
+      nokogiri (>= 1.10.8)
 
 GEM
   remote: http://rubygems.org/
   specs:
     mini_portile2 (2.4.0)
-    nokogiri (1.9.1)
+    nokogiri (1.10.9)
       mini_portile2 (~> 2.4.0)
 
 PLATFORMS
