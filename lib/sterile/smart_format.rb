@@ -19,6 +19,7 @@ module Sterile
     # Like +smart_format+, but works with HTML/XML (somewhat).
     #
     def smart_format_tags(string)
+      string = string.gsub /[\p{Z}\s]+(<\/[a-zA-Z]+>)(['"][a-zA-Z])/, "\\1 \\2" # Fixes quote after whitespace + tag "<em>Dan. </em>'And"
       string.gsub_tags do |text|
         text.smart_format
       end.encode_entities.gsub(/(\<\/\w+\>)&ldquo;/, "\\1&rdquo;").gsub(/(\<\/\w+\>)&lsquo;/, "\\1&rsquo;")
