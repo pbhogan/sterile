@@ -45,3 +45,4 @@ module Sterile
     end
   end
 end
+
