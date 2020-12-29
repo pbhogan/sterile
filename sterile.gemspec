@@ -10,6 +10,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Patrick Hogan"]
   s.email       = ["pbhogan@gmail.com"]
   s.homepage    = "https://github.com/pbhogan/sterile"
+  s.licenses    = ['MIT']
   s.summary     = %q{Sterilize your strings! Transliterate, generate slugs, smart format, strip tags, encode/decode entities and more.}
   s.description = s.summary
 
