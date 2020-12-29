@@ -13,8 +13,6 @@ Gem::Specification.new do |s|
   s.summary     = %q{Sterilize your strings! Transliterate, generate slugs, smart format, strip tags, encode/decode entities and more.}
   s.description = s.summary
 
-  s.rubyforge_project = "sterile"
-
   s.add_dependency("nokogiri", ">= 1.10.8")
 
   s.files         = `git ls-files`.split("\n")
