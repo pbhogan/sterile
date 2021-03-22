@@ -9,6 +9,8 @@ module Sterile
     #   q{"He said, 'Away with you, Drake!'"}.smart_format # => “He said, ‘Away with you, Drake!’”
     #
     def smart_format(string)
+      string = string.to_s
+      string = string.dup if string.frozen?
       smart_format_rules.each do |rule|
         string.gsub! rule[0], rule[1]
       end
