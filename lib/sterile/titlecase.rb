@@ -106,18 +106,7 @@ module Sterile
     end
     alias_method :titleize, :titlecase
 
-
-    private
-
-    # Lazy load smart formatting rules
-    #
-    def smart_format_rules
-      @smart_format_rules ||= begin
-        require "sterile/data/smart_format_rules"
-        Data.smart_format_rules
-      end
-    end
-
   end # class << self
 
 end # module Sterile
+
