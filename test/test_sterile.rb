@@ -32,7 +32,7 @@ class TestSterile < Minitest::Test
 
   def test_scan_tags
     text = []
-    Sterile.scan_tags("a<i>b</i>c") { text << _1 }
+    Sterile.scan_tags("a<i>b</i>c") { |i| text << i }
     assert_equal %w[a b c], text
   end
 
