@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     sterile (1.0.22)
-      nokogiri (>= 1.11.0)
+      nokogiri (>= 1.11.7)
 
 GEM
   remote: https://rubygems.org/
@@ -24,4 +24,4 @@ DEPENDENCIES
   sterile!
 
 BUNDLED WITH
-   2.1.4
+   2.2.19
