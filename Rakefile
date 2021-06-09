@@ -1,7 +1,14 @@
 require 'bundler'
+require 'rake/testtask'
+
 Bundler::GemHelper.install_tasks
 
-require 'rake/testtask'
 Rake::TestTask.new do |t|
-  t.pattern = "test/test_*.rb"
+  t.libs << 'test'
+end
+task default: :test
+
+# Watch rb files, run tests whenever something changes. Requires entr
+task :watch do
+  sh "find . -name '*.rb' | entr -c rake"
 end
