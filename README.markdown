@@ -1,4 +1,4 @@
-Sterile
+Sterile ![test](https://github.com/pbhogan/sterile/actions/workflows/test.yml/badge.svg)
 =======
 
 Sterilize your strings! Transliterate, generate slugs, smart format, strip tags, encode/decode entities and more.
