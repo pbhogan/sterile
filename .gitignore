@@ -5,5 +5,4 @@ doc/*
 .bundle
 .DS_Store
 make
-test
 vendor
