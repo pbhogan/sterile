@@ -7,9 +7,9 @@ class TestSterile < Minitest::Test
     # try all variants
     assert_equal "°", Sterile.decode_entities("&deg;")
     assert_equal "°", Sterile.decode_entities("&#176;")
-    # assert_equal "°", Sterile.decode_entities("&#000176;") # soon
-    # assert_equal "°", Sterile.decode_entities("&#x000b0;") # soon
-    # assert_equal "°", Sterile.decode_entities("&#x000B0;") # soon
+    assert_equal "°", Sterile.decode_entities("&#000176;")
+    assert_equal "°", Sterile.decode_entities("&#x000b0;")
+    assert_equal "°", Sterile.decode_entities("&#x000B0;")
   end
 
   def test_encode_entities
@@ -71,3 +71,4 @@ class TestSterile < Minitest::Test
     assert_equal "Hello world!", Sterile.trim_whitespace(" Hello  world! ")
   end
 end
+

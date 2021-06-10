@@ -24,7 +24,8 @@ module Sterile
     # their Unicode counterparts.
     #
     def decode_entities(string)
-      string.gsub!(/&#(\d{1,4});/) { [$1.to_i].pack("U") }
+      string.gsub!(/&#x([a-zA-Z0-9]{1,7});/) { [$1.to_i(16)].pack("U") }
+      string.gsub!(/&#(\d{1,7});/) { [$1.to_i].pack("U") }
       string.gsub(/&([a-zA-Z0-9]+);/) do
         codepoint = html_entities_data[$1]
         codepoint ? [codepoint].pack("U") : $&
@@ -46,3 +47,4 @@ module Sterile
   end # class << self
 
 end # module Sterile
+
