@@ -19,19 +19,30 @@ module Sterile
       end
     end
 
+    DECODE_ENTITIES_RE = /
+      &(?:
+        \#(\d{1,7})|           # base 10
+        \#x([a-fA-F0-9]{1,7})| # base 16
+        ([a-zA-Z0-9]+)         # text
+      );/x
 
     # The reverse of +encode_entities+. Turns HTML or numeric entities into
     # their Unicode counterparts.
     #
     def decode_entities(string)
-      string.gsub!(/&#x([a-zA-Z0-9]{1,7});/) { [$1.to_i(16)].pack("U") }
-      string.gsub!(/&#(\d{1,7});/) { [$1.to_i].pack("U") }
-      string.gsub(/&([a-zA-Z0-9]+);/) do
-        codepoint = html_entities_data[$1]
-        codepoint ? [codepoint].pack("U") : $&
+      return string if !string.include?("&")
+
+      string.gsub(DECODE_ENTITIES_RE) do
+        if $1
+          $1.to_i.chr(Encoding::UTF_8)
+        elsif $2
+          $2.to_i(16).chr(Encoding::UTF_8)
+        elsif $3
+          codepoint = html_entities_data[$3]
+          codepoint ? codepoint.chr(Encoding::UTF_8) : $&
+        end
       end
     end
-
 
     private
 
@@ -47,4 +58,3 @@ module Sterile
   end # class << self
 
 end # module Sterile
-

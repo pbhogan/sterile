@@ -2,14 +2,21 @@ require "test_helper"
 
 class TestSterile < Minitest::Test
   def test_decode_entities
+    # basic tests
+    assert_equal "", Sterile.decode_entities("")
+    assert_equal "xyz", Sterile.decode_entities("xyz")
     assert_equal "“Hey” you", Sterile.decode_entities("&ldquo;Hey&rdquo; you")
 
-    # try all variants
-    assert_equal "°", Sterile.decode_entities("&deg;")
-    assert_equal "°", Sterile.decode_entities("&#176;")
-    assert_equal "°", Sterile.decode_entities("&#000176;")
-    assert_equal "°", Sterile.decode_entities("&#x000b0;")
-    assert_equal "°", Sterile.decode_entities("&#x000B0;")
+    # base 10, base 16, named
+    %w[&#176; &#000176; &#x000b0; &#x000B0; &deg;].each do |s|
+      assert_equal "°", Sterile.decode_entities(s)
+    end
+
+    # don't accidentally double escape
+    assert_equal "&amp;", Sterile.decode_entities("&#38;amp;")
+
+    # string is not modified, so this should not assert
+    Sterile.decode_entities("hi there".freeze)
   end
 
   def test_encode_entities
@@ -71,4 +78,3 @@ class TestSterile < Minitest::Test
     assert_equal "Hello world!", Sterile.trim_whitespace(" Hello  world! ")
   end
 end
-
