@@ -45,6 +45,15 @@ class TestSterile < Minitest::Test
     assert_equal "“He said, ‘Away, Drake!’”", Sterile.smart_format(s)
   end
 
+  def test_smart_format_times
+    assert_equal "1×1", Sterile.smart_format("1x1")
+    assert_equal "0×1", Sterile.smart_format("0x1")
+    assert_equal "1×0", Sterile.smart_format("1x0")
+    assert_equal "12×21", Sterile.smart_format("12x21")
+    assert_equal "01x1", Sterile.smart_format("01x1")
+    assert_equal "1x01", Sterile.smart_format("1x01")
+  end
+
   def test_smart_format_tags
     # ?
   end

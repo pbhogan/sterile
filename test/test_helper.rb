@@ -1,2 +1,2 @@
-require 'minitest/autorun'
-require 'sterile'
+require "minitest/autorun"
+require "sterile"
