@@ -1,6 +1,7 @@
 require "test_helper"
 
 class TestSterile < Minitest::Test
+
   def test_decode_entities
     assert_equal "“Hey” you", Sterile.decode_entities("&ldquo;Hey&rdquo; you")
 
@@ -79,5 +80,11 @@ class TestSterile < Minitest::Test
   def test_trim_whitespace
     assert_equal "Hello world!", Sterile.trim_whitespace(" Hello  world! ")
   end
+
+  def test_quote_slash_quote
+    assert_equal "“one”/“two”", Sterile.smart_format('"one"/"two"')
+    assert_equal "‘one’/‘two’", Sterile.smart_format("'one'/'two'")
+  end
+
 end
 
