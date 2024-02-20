@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sterile (1.0.24)
+    sterile (1.0.26)
       nokogiri (>= 1.11.7)
 
 GEM

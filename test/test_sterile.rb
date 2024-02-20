@@ -86,5 +86,13 @@ class TestSterile < Minitest::Test
     assert_equal "‘one’/‘two’", Sterile.smart_format("'one'/'two'")
   end
 
+  def test_number_single_quote
+    assert_equal "War in ’24", Sterile.smart_format("War in '24")
+  end
+
+  def test_number_single_quote_in_double_quotes
+    assert_equal "“War in ’24”", Sterile.smart_format("\"War in '24\"")
+  end
+
 end
 
