@@ -94,5 +94,29 @@ class TestSterile < Minitest::Test
     assert_equal "“War in ’24”", Sterile.smart_format("\"War in '24\"")
   end
 
+  def test_copyright_symbol
+    assert_equal "© 2016 PCG", Sterile.smart_format("(c) 2016 PCG")
+    assert_equal "©2016", Sterile.smart_format("(c)2016")
+    assert_equal "© 2016", Sterile.smart_format("(C) 2016")
+    assert_equal "Copyright © PCG", Sterile.smart_format("Copyright (c) PCG")
+    assert_equal "copyright © PCG", Sterile.smart_format("copyright (C) PCG")
+  end
+
+  def test_enumerated_c_is_not_copyright
+    s = "(a) a king, (b) people, within (c) a territory, with (d) laws"
+    assert_equal s, Sterile.smart_format(s)
+    assert_equal "(c) the third point", Sterile.smart_format("(c) the third point")
+  end
+
+  def test_registered_symbol
+    assert_equal "Acme® widgets", Sterile.smart_format("Acme(r) widgets")
+    assert_equal "Acme®", Sterile.smart_format("Acme(R)")
+  end
+
+  def test_enumerated_r_is_not_registered
+    s = "(q) one, (r) two"
+    assert_equal s, Sterile.smart_format(s)
+  end
+
 end
 

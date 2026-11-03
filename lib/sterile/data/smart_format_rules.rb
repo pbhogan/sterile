@@ -23,9 +23,12 @@ module Sterile
         ["...", "…"],
         ["(tm)", "™"],
         ["(TM)", "™"],
-        ["(c)", "©"],
-        ["(r)", "®"],
-        ["(R)", "®"],
+        # Only where it's clearly a copyright notice, so list markers like
+        # "(a) … (b) … (c) …" survive.
+        [/\([cC]\)(?=[\p{Z}\s]*\d)/, "©"],
+        [/(copyright[\p{Z}\s]+)\([cC]\)/i, "\\1©"],
+        # Only when attached to the preceding word (e.g. "Acme(R)").
+        [/(?<=[^\p{Z}\s(])\([rR]\)/, "®"],
         ['"/"', "”/“"],
         ["'/'", "’/‘"],
         [/([iI][nN]\s+)\'(\d\d\D)/, "\\1’\\2"],
